@@ -22,13 +22,13 @@
 
 import SpriteKit
 
+enum CardLevel :CGFloat {
+    case board = 10
+    case moving = 100
+    case enlarged = 200
+}
+
 class GameScene: SKScene {
-    
-    enum CardLevel :CGFloat {
-        case board = 10
-        case moving = 100
-        case enlarged = 200
-    }
 
     override func didMoveToView(view: SKView) {
 
@@ -52,14 +52,31 @@ class GameScene: SKScene {
             let location = touch.locationInNode(self)           // 1
             if let card = nodeAtPoint(location) as? Card {      // 2
                 card.position = location
+                if card.enlarged { return }
             }
         }
     }
+    
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         for touch in touches {
             let location = touch.locationInNode(self)
             if let card = nodeAtPoint(location) as? Card {
+                
+                //Flip
+//                if touch.tapCount > 1 {
+//                    card.flip()
+//                }
+                
+                //Enlarge
+                if touch.tapCount > 1 {
+                    card.enlarge()
+                    //card.flip()
+                    return
+                }
+                
+                if card.enlarged { return }
+                
                 //Wiggle
                 let wiggleIn = SKAction.scaleXTo(1.0, duration: 0.2)
                 let wiggleOut = SKAction.scaleXTo(1.2, duration: 0.2)
@@ -88,6 +105,7 @@ class GameScene: SKScene {
             if let card = nodeAtPoint(location) as? Card {
                 card.zPosition = CardLevel.board.rawValue
                 card.removeFromParent()
+                
                 addChild(card)
                 //Wiggle
                 card.removeActionForKey("wiggle")
@@ -96,6 +114,7 @@ class GameScene: SKScene {
 //                card.runAction(SKAction.rotateToAngle(0, duration: 0.2), withKey:"rotate")
 
                 card.removeActionForKey("pickup")
+                
                 card.runAction(SKAction.scaleTo(1.0, duration: 0.25), withKey: "drop")
             }
         }
