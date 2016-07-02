@@ -23,21 +23,28 @@
 import SpriteKit
 
 class GameScene: SKScene {
+    
+    enum CardLevel :CGFloat {
+        case board = 10
+        case moving = 100
+        case enlarged = 200
+    }
 
-  override func didMoveToView(view: SKView) {
-    let bg = SKSpriteNode(imageNamed: "bg_blank")
-    bg.anchorPoint = CGPoint.zero
-    bg.position = CGPoint.zero
-    addChild(bg)
+    override func didMoveToView(view: SKView) {
+
+        let bg = SKSpriteNode(imageNamed: "bg_blank")
+        bg.anchorPoint = CGPoint.zero
+        bg.position = CGPoint.zero
+        addChild(bg)
     
-    let wolf = Card(cardType: .Wolf)
-    wolf.position = CGPointMake(100,200)
-    addChild(wolf)
+        let wolf = Card(cardType: .Wolf)
+        wolf.position = CGPointMake(100,200)
+        addChild(wolf)
     
-    let bear = Card(cardType: .Bear)
-    bear.position = CGPointMake(300, 200)
-    addChild(bear)
-    
+        let bear = Card(cardType: .Bear)
+        bear.position = CGPointMake(300, 200)
+        addChild(bear)
+
     }
     
     override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -45,6 +52,26 @@ class GameScene: SKScene {
             let location = touch.locationInNode(self)           // 1
             if let card = nodeAtPoint(location) as? Card {      // 2
                 card.position = location
+            }
+        }
+    }
+    
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        for touch in touches {
+            let location = touch.locationInNode(self)
+            if let card = nodeAtPoint(location) as? Card {
+                card.zPosition = CardLevel.moving.rawValue
+            }
+        }
+    }
+    
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        for touch in touches {
+            let location = touch.locationInNode(self)
+            if let card = nodeAtPoint(location) as? Card {
+                card.zPosition = CardLevel.board.rawValue
+                card.removeFromParent()
+                addChild(card)
             }
         }
     }
