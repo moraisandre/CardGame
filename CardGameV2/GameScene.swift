@@ -30,7 +30,23 @@ class GameScene: SKScene {
     bg.position = CGPoint.zero
     addChild(bg)
     
+    let wolf = Card(cardType: .Wolf)
+    wolf.position = CGPointMake(100,200)
+    addChild(wolf)
     
+    let bear = Card(cardType: .Bear)
+    bear.position = CGPointMake(300, 200)
+    addChild(bear)
+    
+    }
+    
+    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        for touch in touches {
+            let location = touch.locationInNode(self)           // 1
+            if let card = nodeAtPoint(location) as? Card {      // 2
+                card.position = location
+            }
+        }
     }
 
 }
